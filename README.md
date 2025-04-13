@@ -1,141 +1,95 @@
 # Status Page Application
 
-A real-time service status monitoring application with incident management.
+A modern status page application for monitoring and displaying service health information.
+
+## Project Structure
+
+This project consists of two main components:
+
+- **status-frontend**: React-based frontend application
+- **status-backend**: Node.js/Express backend API
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.x or later
-- npm 8.x or later
-- PostgreSQL 14.x or later
+- Node.js (v14 or higher)
+- npm or yarn
+- PostgreSQL (optional, for production)
 
 ### Installation
 
 1. Clone this repository
-2. Install dependencies:
 ```bash
+git clone https://github.com/yourusername/status-page.git
+cd status-page
+```
+
+2. Install dependencies for both frontend and backend
+```bash
+# Install backend dependencies
+cd status-backend
+npm install
+
+# Install frontend dependencies
+cd ../status-frontend
 npm install
 ```
 
-3. Set up environment variables:
-```bash
-cp status-frontend/.env.example status-frontend/.env
-cp status-backend/.env.example status-backend/.env
-```
+3. Configure environment variables
+   - Create `.env` files in both frontend and backend directories based on the provided examples
 
-4. Generate Prisma client:
-```bash
-cd status-backend
-npx prisma generate
-```
-
-5. Start development servers:
+4. Start the development servers
 ```bash
 # From the root directory
 npm run dev
 ```
 
-## Build & Deployment
+## Features
 
-### Building for Production
+- Real-time service status updates
+- Incident management
+- Team collaboration
+- Mobile-responsive design
+- REST API with authentication
 
-To build both frontend and backend for production:
+## Development
+
+### Backend
+
+The backend is built with:
+- Express.js
+- Prisma ORM
+- Socket.IO for real-time updates
+- JWT authentication
+
+### Frontend
+
+The frontend is built with:
+- React
+- TypeScript
+- Tailwind CSS
+- Socket.IO client
+
+## API Documentation
+
+API endpoints are available at `/api` with the following resources:
+- `/api/auth` - Authentication
+- `/api/services` - Service management
+- `/api/incidents` - Incident management
+- `/api/teams` - Team management
+
+## Deployment
+
+### Docker
+
+A Dockerfile is included for containerized deployment:
 
 ```bash
-# From the root directory
-npm run build
+docker build -t status-page .
+docker run -p 3000:3000 -p 3001:3001 status-page
 ```
-
-Or use the deployment script which handles environment-specific builds:
-
-```bash
-./deploy.sh
-```
-
-### Frontend Deployment Options
-
-#### Deploy to Vercel
-
-```bash
-cd status-frontend
-npm run build:production
-npx vercel --prod
-```
-
-#### Deploy to Netlify
-
-```bash
-cd status-frontend
-npm run build:production
-npx netlify deploy --prod
-```
-
-### Backend Deployment Options
-
-#### Deploy with Docker
-
-```bash
-cd status-backend
-docker-compose up -d
-```
-
-#### Deploy to Cloud Provider (Digital Ocean, AWS, etc.)
-
-1. Build the backend:
-```bash
-cd status-backend
-npm run deploy:prepare
-```
-
-2. Set up a server with the included script:
-```bash
-scp status-backend/deploy-scripts/setup-server.sh user@your-server:/tmp/
-ssh user@your-server "chmod +x /tmp/setup-server.sh && sudo /tmp/setup-server.sh"
-```
-
-3. Deploy the application:
-```bash
-scp -r status-backend/dist user@your-server:/opt/status-app/
-scp status-backend/.env.production user@your-server:/opt/status-app/.env
-ssh user@your-server "cd /opt/status-app && npm start:prod"
-```
-
-## Environment Variables
-
-### Frontend Variables
-
-- `REACT_APP_API_URL`: URL for backend API
-- `REACT_APP_SOCKET_URL`: URL for WebSocket connection
-- `REACT_APP_ENVIRONMENT`: Environment name (development, production)
-
-### Backend Variables
-
-- `NODE_ENV`: Environment mode
-- `PORT`: Server port
-- `DATABASE_URL`: PostgreSQL connection string
-- `JWT_SECRET`: Secret for JWT token generation
-- `JWT_EXPIRY`: JWT token expiry time
-- `ALLOWED_ORIGINS`: CORS allowed origins
-
-## CI/CD
-
-This project includes GitHub Actions workflows for continuous integration and deployment:
-
-- Frontend: Tests and deploys to Vercel automatically on push to main branch
-- Backend: Tests, builds a Docker image, and deploys to DigitalOcean
-
-To set up CI/CD, add the following secrets to your GitHub repository:
-
-- `VERCEL_TOKEN`: Vercel API token
-- `VERCEL_ORG_ID`: Vercel organization ID
-- `VERCEL_PROJECT_ID`: Vercel project ID
-- `DOCKERHUB_USERNAME`: DockerHub username
-- `DOCKERHUB_TOKEN`: DockerHub token
-- `DEPLOY_HOST`: Server hostname
-- `DEPLOY_USER`: Server username
-- `DEPLOY_KEY`: SSH private key for server access
 
 ## License
 
-This project is licensed under the MIT License.
+[MIT](LICENSE)

@@ -5,10 +5,14 @@ node_modules/
 
 # Testing
 coverage/
+*.lcov
+.nyc_output/
 
 # Production
 status-backend/dist/
 status-frontend/build/
+build/
+dist/
 
 # Environmental Variables
 .env
@@ -16,11 +20,14 @@ status-frontend/build/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 
 # Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+*.log
 
 # IDEs and Editors
 .idea/
@@ -28,17 +35,44 @@ yarn-error.log*
 *.swp
 *.swo
 *.sublime-*
+.project
+.classpath
+.c9/
+*.launch
+.settings/
 
 # OS Files
 .DS_Store
 Thumbs.db
+.directory
+desktop.ini
 
 # Prisma
 status-backend/prisma/dev.db
 status-backend/prisma/migrations/
+*.db
+*.db-journal
+
+# Temporary files
+tmp/
+temp/
+.cache/
 
 # Vercel
 .vercel
 
 # Netlify
 .netlify
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Misc
+.history/
+
