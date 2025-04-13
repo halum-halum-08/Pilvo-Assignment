@@ -20,7 +20,7 @@ const StatusPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" asChild>
-              <a href="https://github.com/yourusername/status-page-app" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/halum-halum-08/Pilvo-Assignment" target="_blank" rel="noopener noreferrer">
                 <Github className="mr-2 h-4 w-4" /> {/* Replace GitHubLogoIcon with Github */}
                 GitHub
               </a>
