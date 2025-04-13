@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Support both PostgreSQL and SQLite for development flexibility
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  password     String
+  role         String   @default("user") // "user", "admin"
+  organization String?
+  teamId       Int?
+  team         Team?    @relation(fields: [teamId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Team {
+  id           Int       @id @default(autoincrement())
+  name         String
+  organization String?
+  users        User[]
+  services     Service[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Service {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  status      String     @default("Operational")
+  teamId      Int
+  team        Team       @relation(fields: [teamId], references: [id])
+  incidents   Incident[]
+  uptime      Float      @default(100)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Incident {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String?
+  status      String
+  type        String          // "Incident" or "Maintenance"
+  serviceId   Int
+  service     Service         @relation(fields: [serviceId], references: [id])
+  updates     IncidentUpdate[]
+  resolvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model IncidentUpdate {
+  id         Int      @id @default(autoincrement())
+  message    String
+  status     String
+  incidentId Int
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}

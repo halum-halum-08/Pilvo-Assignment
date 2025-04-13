@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: status-backend
+    env: node
+    buildCommand: npm install && npm run prisma:generate && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRY
+        value: 7d
+      - key: ALLOWED_ORIGINS
+        value: https://status-page-frontend.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: status_db
+          property: connectionString
+
+databases:
+  - name: status_db
+    plan: free
+    databaseName: statuspage
+    user: statuspage_user

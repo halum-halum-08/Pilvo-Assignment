@@ -1,0 +1,41 @@
+{
+  "name": "Status Page Application",
+  "description": "A simplified version of a status page application",
+  "repository": "https://github.com/yourusername/status-page-app",
+  "keywords": ["node", "express", "react", "status-page"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment for the application",
+      "value": "production"
+    },
+    "JWT_SECRET": {
+      "description": "A secret key for JWT token generation",
+      "generator": "secret"
+    },
+    "JWT_EXPIRY": {
+      "description": "JWT token expiry time",
+      "value": "7d"
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "Comma-separated list of allowed CORS origins"
+    },
+    "REACT_APP_API_URL": {
+      "description": "Backend API URL for the frontend",
+      "value": "https://your-app-name.herokuapp.com/api"
+    },
+    "REACT_APP_SOCKET_URL": {
+      "description": "WebSocket URL for the frontend",
+      "value": "https://your-app-name.herokuapp.com"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "status-page-app",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "workspaces": [
+    "status-backend",
+    "status-frontend"
+  ],
+  "scripts": {
+    "dev:backend": "cd status-backend && npm run dev",
+    "dev:frontend": "cd status-frontend && npm run start",
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "build:backend": "npm run build --workspace=status-backend",
+    "build:frontend": "npm run build --workspace=status-frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start:backend": "npm run start --workspace=status-backend",
+    "start:frontend": "npm --prefix status-frontend start",
+    "start": "concurrently \"npm:start:backend\" \"npm:start:frontend\"",
+    "start:backend:debug": "node backend-start.js",
+    "prisma:generate": "npm run prisma:generate --workspace=status-backend",
+    "heroku-postbuild": "npm run build:backend && npm install --prefix status-frontend && npm run build --prefix status-frontend",
+    "setup": "node run-setup.js",
+    "test": "npm run test --workspace=status-frontend && npm run test --workspace=status-backend",
+    "deploy": "bash deploy.sh",
+    "postinstall": "npm install concurrently@^7.6.0 --no-save",
+    "update-deps": "node update-dependencies.js",
+    "fix-vulnerabilities": "node fix-vulnerabilities.js",
+    "fix-deprecated": "npm install rimraf@^5.0.0 glob@^10.0.0 --no-save",
+    "check-backend": "node check-backend.js"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-checkbox": "^1.1.5",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-separator": "^1.1.3"
+  }
+}
