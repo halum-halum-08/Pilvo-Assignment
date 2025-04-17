@@ -2,9 +2,23 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import UserAccountNav from '../components/auth/UserAccountNav';
 import { ModeToggle } from '../components/ui/mode-toggle';
+import { Button } from '../components/ui/button';
+import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from '../hooks/use-toast';
 
 const DashboardPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -17,6 +31,15 @@ const DashboardPage: React.FC = () => {
           <div className="flex items-center gap-4">
             <ModeToggle />
             <UserAccountNav />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout}
+              className="hidden sm:flex items-center"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>

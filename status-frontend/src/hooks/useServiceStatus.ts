@@ -4,6 +4,7 @@ import { Service } from '../types/service';
 import { serviceStatusService } from '../services/serviceStatusService';
 import { toast } from './use-toast';
 import { useApiHealth } from './useApiHealth';
+import axiosInstance from '../services/axiosConfig';
 
 export const useServiceStatus = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -23,8 +24,10 @@ export const useServiceStatus = () => {
     try {
       setLoading(true);
       setError(null);
-      const fetchedServices = await serviceStatusService.getServices();
-      setServices(fetchedServices);
+      
+      // Use the axiosInstance which now has the correct API_URL (port 8080)
+      const response = await axiosInstance.get('/services');
+      setServices(response.data);
     } catch (err) {
       console.error('Error fetching services:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch services'));

@@ -6,8 +6,25 @@ import StatusTimeline from '../../components/public/StatusTimeline';
 import { ModeToggle } from '../../components/ui/mode-toggle';
 import { Button } from '../../components/ui/button';
 import { Github } from 'lucide-react'; // Replace GitHubLogoIcon with Github from lucide-react
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import { toast } from '../../hooks/use-toast';
+import UserAccountNav from '../../components/auth/UserAccountNav';
 
 const StatusPage: React.FC = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,6 +43,27 @@ const StatusPage: React.FC = () => {
               </a>
             </Button>
             <ModeToggle />
+            {user && <UserAccountNav />}
+            {user && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleLogout}
+                className="hidden sm:flex items-center"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            )}
+            {!user && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </header>

@@ -1,40 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
-import { toast } from '../hooks/use-toast';
-import { AlertTriangle, Wifi, WifiOff } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { WifiOff } from 'lucide-react';
 
-export const NetworkStatusAlert: React.FC = () => {
-  const { isOnline, wasOffline } = useNetworkStatus();
+export function NetworkStatusAlert() {
+  const { isOnline } = useNetworkStatus();
 
-  useEffect(() => {
-    // Show toast when connection status changes
-    if (!isOnline) {
-      toast({
-        title: 'You are offline',
-        description: 'Please check your internet connection',
-        variant: 'destructive',
-        // Remove the icon property since it's not supported
-        duration: Infinity, // Stay until connection is restored
-      });
-    } else if (wasOffline) {
-      toast({
-        title: 'Back online',
-        description: 'Your internet connection has been restored',
-        variant: 'default',
-        // Remove the icon property since it's not supported
-      });
-    }
-  }, [isOnline, wasOffline]);
+  // Only show when offline
+  if (isOnline) return null;
 
-  // Render an offline indicator when user is offline
-  if (!isOnline) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg">
-        <AlertTriangle className="h-4 w-4" />
-        <span className="text-sm font-medium">You are offline</span>
-      </div>
-    );
-  }
-
-  return null;
-};
+  return (
+    <Alert variant="warning" className="fixed bottom-4 left-4 max-w-md z-50 animate-in fade-in duration-300">
+      <WifiOff className="h-4 w-4" />
+      <AlertTitle>Network Disconnected</AlertTitle>
+      <AlertDescription>
+        You are currently offline. Some features may be unavailable.
+      </AlertDescription>
+    </Alert>
+  );
+}

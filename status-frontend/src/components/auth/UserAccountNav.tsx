@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { LogOut, Settings, User } from 'lucide-react';
+import { toast } from '../../hooks/use-toast';
 
 export function UserAccountNav() {
   const { user, logout } = useAuth();
@@ -27,6 +28,15 @@ export function UserAccountNav() {
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    navigate('/login');
   };
 
   return (
@@ -58,10 +68,7 @@ export function UserAccountNav() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          onClick={() => {
-            logout();
-            navigate('/login');
-          }}
+          onClick={handleLogout}
           className="text-red-600 focus:text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />

@@ -19,6 +19,7 @@ import DashboardIncidentDetailPage from './pages/dashboard/IncidentDetailPage';
 import ServiceStatusUpdatePage from './pages/dashboard/services/ServiceStatusUpdatePage';
 import { NetworkStatusAlert } from './components/NetworkStatusAlert';
 import { ApiStatusAlert } from './components/ApiStatusAlert';
+import LogoutPage from './pages/LogoutPage';
 
 const App: React.FC = () => {
   return (
@@ -51,6 +52,7 @@ const App: React.FC = () => {
             
             {/* Catch all route - redirect to status */}
             <Route path="*" element={<Navigate to="/status" replace />} />
+            <Route path="/logout" element={<LogoutPage />} />
           </Routes>
           <Toaster />
           <NetworkStatusAlert />

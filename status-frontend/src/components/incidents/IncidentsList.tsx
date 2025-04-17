@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Plus, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -23,31 +23,7 @@ const IncidentsList: React.FC<IncidentsListProps> = ({ type, onAdd }) => {
 
   const typeLabel = type === 'incident' ? 'Incidents' : 'Maintenance';
 
-  useEffect(() => {
-    fetchIncidents();
-    
-    // Setup socket listeners
-    const unsubscribeCreated = onIncidentCreated((incident) => {
-      if (incident.type.toLowerCase() === type) {
-        setIncidents(prev => [incident, ...prev]);
-      }
-    });
-    
-    const unsubscribeUpdated = onIncidentUpdated((updatedIncident) => {
-      if (updatedIncident.type.toLowerCase() === type) {
-        setIncidents(prev => prev.map(incident => 
-          incident.id === updatedIncident.id ? updatedIncident : incident
-        ));
-      }
-    });
-    
-    return () => {
-      unsubscribeCreated();
-      unsubscribeUpdated();
-    };
-  }, [type]);
-
-  const fetchIncidents = async () => {
+  const fetchIncidents = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -65,7 +41,34 @@ const IncidentsList: React.FC<IncidentsListProps> = ({ type, onAdd }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [type, typeLabel]);
+
+  const handleIncidentCreated = useCallback((incident: Incident) => {
+    if (incident.type.toLowerCase() === type) {
+      setIncidents(prev => [incident, ...prev]);
+    }
+  }, [type]);
+
+  const handleIncidentUpdated = useCallback((updatedIncident: Incident) => {
+    if (updatedIncident.type.toLowerCase() === type) {
+      setIncidents(prev => prev.map(incident => 
+        incident.id === updatedIncident.id ? updatedIncident : incident
+      ));
+    }
+  }, [type]);
+
+  useEffect(() => {
+    fetchIncidents();
+    
+    // Setup socket listeners
+    const unsubscribeCreated = onIncidentCreated(handleIncidentCreated);
+    const unsubscribeUpdated = onIncidentUpdated(handleIncidentUpdated);
+    
+    return () => {
+      unsubscribeCreated();
+      unsubscribeUpdated();
+    };
+  }, [fetchIncidents, handleIncidentCreated, handleIncidentUpdated, onIncidentCreated, onIncidentUpdated]);
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, string> = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { Button } from '../ui/button';
@@ -48,24 +48,8 @@ const IncidentDetail: React.FC = () => {
   const isIncident = incident?.type === 'Incident';
   const statuses = isIncident ? INCIDENT_STATUSES : MAINTENANCE_STATUSES;
 
-  useEffect(() => {
-    if (id) {
-      fetchIncident(parseInt(id));
-      joinIncidentRoom(parseInt(id));
-    }
-    
-    const unsubscribeUpdated = onIncidentUpdated((updatedIncident) => {
-      if (updatedIncident.id === parseInt(id || '0')) {
-        setIncident(updatedIncident);
-      }
-    });
-    
-    return () => {
-      unsubscribeUpdated();
-    };
-  }, [id]);
-
-  const fetchIncident = async (incidentId: number) => {
+  // Use useCallback for fetchIncident to safely include it in the useEffect dependencies
+  const fetchIncident = useCallback(async (incidentId: number) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -86,7 +70,24 @@ const IncidentDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    if (id) {
+      fetchIncident(parseInt(id));
+      joinIncidentRoom(parseInt(id));
+    }
+    
+    const unsubscribeUpdated = onIncidentUpdated((updatedIncident) => {
+      if (updatedIncident.id === parseInt(id || '0')) {
+        setIncident(updatedIncident);
+      }
+    });
+    
+    return () => {
+      unsubscribeUpdated();
+    };
+  }, [id, fetchIncident, joinIncidentRoom, onIncidentUpdated]);
 
   const submitUpdate = async (e: React.FormEvent) => {
     e.preventDefault();

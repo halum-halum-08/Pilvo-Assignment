@@ -16,7 +16,11 @@
     "start:prod": "node dist/index.js",
     "deploy:prepare": "npm run build && npm run prisma:generate",
     "deploy:render": "echo 'Deploy to Render by connecting your GitHub repo at https://dashboard.render.com/select-repo?type=web'",
-    "render-build": "npm install && npm run prisma:generate && npm run build"
+    "render-build": "npm install && npm run prisma:generate && npm run build",
+    "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset",
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "keywords": [],
   "author": "",

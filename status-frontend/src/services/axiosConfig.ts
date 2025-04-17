@@ -1,27 +1,30 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from '../hooks/use-toast';
 
-// Debug flag
-const DEBUG = process.env.REACT_APP_DEBUG === 'true';
+// Debug flag for development mode
+const DEBUG = process.env.NODE_ENV === 'development';
 
-// Create axios instance with base URL
-// Ensure no trailing slash in the API_URL to avoid URL path issues
-const API_URL = (process.env.REACT_APP_API_URL || 'http://localhost:3001/api').replace(/\/+$/, '');
+// Configure the API URL
+// Default to 8080 port for backend as that's the standard port used in your project
+const DEFAULT_API_URL = 'http://localhost:8080/api';
+const API_URL = (process.env.REACT_APP_API_URL || DEFAULT_API_URL).replace(/\/+$/, '');
 
+// Log configuration in development
 if (DEBUG) {
-  console.log('API Config:', {
+  console.log('API Configuration:', {
     apiUrl: API_URL,
     environment: process.env.NODE_ENV,
     debug: DEBUG
   });
 }
 
+// Create axios instance with base URL
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 30000, // 30 seconds timeout - increase for development
+  timeout: 30000, // 30 seconds timeout
   withCredentials: false // Set to true if you're using cookies for auth
 });
 
@@ -115,26 +118,54 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// Extended health check with retry logic and more detailed errors
+// Extended health check with improved retry logic and multiple backend ports
 export const checkApiHealth = async (): Promise<boolean> => {
   try {
     // Create a temporary axios instance without the /api base URL to avoid path duplication
+    const apiHost = API_URL.split('/api')[0];
+    
+    if (DEBUG) console.log(`Checking API health using base URL: ${apiHost}`);
+    
     const healthCheckAxios = axios.create({
-      baseURL: 'http://localhost:3001',
       timeout: 5000
     });
     
-    // Try multiple health check endpoints in case one is available
-    for (const endpoint of ['/health', '/api/health', '/']) {
-      try {
-        await healthCheckAxios.get(endpoint);
-        if (DEBUG) console.log(`Health check succeeded on ${endpoint}`);
-        return true;
-      } catch (err) {
-        if (DEBUG) console.log(`Health check failed on ${endpoint}:`, err);
-        // Continue to next endpoint
+    // Try multiple backend port combinations in case the default port isn't working
+    const possibleHosts = [
+      apiHost,                          // Default configured host
+      'http://localhost:8080',          // Standard backend port
+      'http://localhost:3001',          // Alternative port
+      'http://127.0.0.1:8080',          // Try with IP instead of localhost
+      'http://127.0.0.1:3001'           // Try with IP instead of localhost
+    ];
+    
+    // Try endpoints on each possible host
+    for (const host of possibleHosts) {
+      for (const endpoint of ['/health', '/api/health', '/']) {
+        try {
+          const url = `${host}${endpoint}`;
+          if (DEBUG) console.log(`Attempting health check at: ${url}`);
+          
+          const response = await healthCheckAxios.get(url, { timeout: 3000 });
+          
+          if (response.status === 200) {
+            if (DEBUG) console.log(`Health check succeeded on ${url}`);
+            
+            // If we found a working API but it's different from our configured one,
+            // log this information for debugging purposes
+            if (host !== apiHost) {
+              console.log(`API found at ${host}, which differs from configured URL ${apiHost}`);
+            }
+            
+            return true;
+          }
+        } catch (err) {
+          if (DEBUG) console.log(`Health check failed on ${host}${endpoint}:`, err);
+          // Continue to next endpoint
+        }
       }
     }
+    
     // If we get here, all endpoints failed
     console.error('All API health checks failed');
     return false;

@@ -5,67 +5,65 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Support both PostgreSQL and SQLite for development flexibility
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String
+  id           String    @id @default(uuid())
+  email        String    @unique
   password     String
-  role         String   @default("user") // "user", "admin"
-  organization String?
-  teamId       Int?
-  team         Team?    @relation(fields: [teamId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  name         String
+  role         String    @default("user")
+  organization String?   // Added organization field
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  team         Team?     @relation(fields: [teamId], references: [id])
+  teamId       String?
 }
 
 model Team {
-  id           Int       @id @default(autoincrement())
+  id           String    @id @default(uuid())
   name         String
-  organization String?
-  users        User[]
-  services     Service[]
+  organization String?   // Added organization field
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  users        User[]
+  services     Service[]
 }
 
 model Service {
-  id          Int        @id @default(autoincrement())
+  id          String    @id @default(uuid())
   name        String
   description String?
-  status      String     @default("Operational")
-  teamId      Int
-  team        Team       @relation(fields: [teamId], references: [id])
+  status      String    @default("operational")
+  team        Team?     @relation(fields: [teamId], references: [id])
+  teamId      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   incidents   Incident[]
-  uptime      Float      @default(100)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
 }
 
 model Incident {
-  id          Int             @id @default(autoincrement())
+  id          String    @id @default(uuid())
   title       String
-  description String?
-  status      String
-  type        String          // "Incident" or "Maintenance"
-  serviceId   Int
-  service     Service         @relation(fields: [serviceId], references: [id])
+  description String
+  status      String    @default("investigating")
+  impact      String    @default("minor")
+  service     Service   @relation(fields: [serviceId], references: [id])
+  serviceId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   updates     IncidentUpdate[]
-  resolvedAt  DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
 }
 
 model IncidentUpdate {
-  id         Int      @id @default(autoincrement())
-  message    String
-  status     String
-  incidentId Int
-  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+  id          String    @id @default(uuid())
+  message     String
+  status      String
+  incident    Incident  @relation(fields: [incidentId], references: [id])
+  incidentId  String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
